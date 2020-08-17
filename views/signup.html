@@ -28,30 +28,32 @@
 		<div id="subtext"> please fill in to create an account!</div>
 		<div id="line"> <div><br>
 	
-		<div id="details">
+  <div id="details">
+  <form action="http://localhost:3000/signupdetail" method="POST">
+  <input type="text" name="firstname" class="box1" id="firstname" value="First name">
   
-  <input type="text" name="username" class="box1" id="firstname" value="First name">
-  
-  <input type="text" name="username" class="box1" id="lastname" value="Last Name"><br><br><br>
+  <input type="text" name="lastname" class="box1" id="lastname" value="Last Name"><br><br><br>
   
   <input type="text" name="username" class="box1" id="username" value="User name"><br><br>
   
-  <input type="text" name="username" class="box1" id="mobileno" value="mobile number"><br><br>
+  <input type="text" name="mobileno" class="box1" id="mobileno" value="mobile number"><br><br>
   
-  <input type="text" name="username" class="box1" id="address1" value="Address line1">
+  <input type="text" name="address1" class="box1" id="address1" value="Address line1">
   
-  <input type="text" name="username" class="box1" id="address2" value="Address line2"><br><br><br>
+  <input type="text" name="address2" class="box1" id="address2" value="Address line2"><br><br><br>
   
-  <input type="text" name="username" class="box1" id="address3" value="Address line3">
+  <input type="text" name="address3" class="box1" id="address3" value="Address line3">
   
-  <input type="text" name="username" class="box1" id="zipcode" value="Zipcode"><br><br><br>
+  <input type="text" name="zipcode" class="box1" id="zipcode" value="Zipcode"><br><br><br>
   
   <input type="password" name="password" class="box1" id="password1" value="Password"><br><br>
   <input type="checkbox" name="vehicle3" value="Boat" id="tc"> I accept the terms of use and privacy policy<br><br>
   
   <div id="submitbutton">
-  <input type = "button" name="data" id="buttonconfig" onclick="test2()" value="Submit">
-</div>
+  <!--<input type = "button" name="data" id="buttonconfig" onclick="test2()" value="Submit">-->
+  <button type = "Submit"> Submit </button>
+	</div>
+</form>
 </div>
 </div>
 
