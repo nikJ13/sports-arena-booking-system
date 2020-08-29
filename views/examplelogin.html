@@ -1,0 +1,71 @@
+<html>
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sportsera</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    
+    
+    <link rel="stylesheet" href="css/loginstyle.css">
+    <script  src="../js/jquery-2.1.4.min.js"></script>
+    <script src="../js/require.js"></script>
+    <script src="../js/loginscript.js"></script> 
+    <link href='https://fonts.googleapis.com/css?family=Oxygen:400,300,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+</head>	
+<body>
+	<div id="loginbox" class="w3-animate-zoom">
+		<div id="logintext">Login<br></div>
+		<div id="box">
+<br><br>
+<!-- <script> -->
+<!-- function takingimg(){ -->
+
+	<!-- var spawn = require('child_process').spawn, -->
+    <!-- py    = spawn('python', ['../testingimg.py']); -->
+	<!-- py.stdout.on('end', function(end){ -->
+		<!-- console.log(end); -->
+		<!-- if (end==1){ -->
+			<!-- var text = "success"; -->
+			<!-- console.log("success"); -->
+		<!-- }else -->
+		<!-- { -->
+			<!-- var text = "wrong user"; -->
+			<!-- console.log("wrong user"); -->
+		<!-- } -->
+	<!-- }); -->
+	<!-- document.getElementById('fileimg').value = text; -->
+<!-- } -->
+<!-- </script> -->
+<!--<div>
+		<video class="part2" id="player" autoplay width=640 height=480>
+	</div>-->
+	<div>
+	<!--<button id="capturebutton" onclick="capButton()">Capture</button>-->
+	<form action="http://localhost:3000/logindetail" method="POST">
+		<div id="details">
+		<!--<input id="fileInput" type="text" name="imgdata" />-->
+  User name:<br>
+  <input type="text" name="username" class="box1" id="username"><br>
+  <!--Password:<br>
+  <input type="password" name="password" class="box1" id="password1">-->
+  <!--<div id="capturebutton">
+  <button type = "Capture" onclick="takingimg()"> Capture </button>
+</div>-->
+<!-- <input id="fileimg" type="text" name="imgdata" /> -->
+  <br><br>
+  <div id="submitbutton">
+  <button type = "Submit"> Submit </button>
+</div>
+</div>
+</form>
+<!--<div>
+	<canvas class="part2" id="canvas" width=640 height="480"></canvas>
+</div>-->
+<!--<script src="../js/main.js"></script>-->
+</div>
+</div>
+</div>
+</body>
+</html>
