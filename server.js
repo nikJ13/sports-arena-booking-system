@@ -1,18 +1,32 @@
-var http = require('http');
+var https = require('https');
 var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 var app = express();
+const spawn = require("child_process").spawn;
+var session = require('express-session');
+const router = express.Router();
 //dbst mysql = require('mysql');
 var sqlite3 = require('sqlite3').verbose();
-
+const url = require('url');
 var g;
 var user;
 var staff;
+var sess;
+app.use(session({secret: 'ssshhhhh',saveUninitialized: true,resave: true}));
 
 //Middleware
 app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.static(path.join(__dirname, 'public'))); //for configuring the path
+app.set('views', path.join(__dirname, 'views')); //for configuring the path
+app.listen(process.env.PORT || 3000,() => {
+    console.log(`App Started on PORT ${process.env.PORT || 3000}`);
+});
+app.use('/',router);
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+app.set('view engine', 'ejs');
 
 /*var db_data = {
     host : "remotemysql.com",
@@ -32,142 +46,214 @@ let db = new sqlite3.Database('./lite.db',(err) => {              // The server 
     }                      
     console.log("Database dbnected!!");
   }); 
+  
+db.get("PRAGMA foreign_keys = ON")
+db.run('PRAGMA busy_timeout = 6000');
 
-que = 'CREATE TABLE IF NOT EXISTS USER(ID INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT, username TEXT, mobileno NUMBER, password TEXT, address1 TEXT, address2 TEXT, address3 TEXT, zipcode NUMBER);';
+que = 'CREATE TABLE IF NOT EXISTS USER(uid INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT, username TEXT, password TEXT, address1 TEXT, address2 TEXT, faceno BLOB, booking1 INTEGER,FOREIGN KEY(booking1) REFERENCES GROUND(gid));';
 
 db.all(que, function(err, result){
 	if (err) throw err;
 	console.log(result);
 });
 
-app.listen(3000);
-
-
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-
-app.set('views', path.join(__dirname, 'views'));
-
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
-
-
-app.get('/logindetail', function(req, res){
-	var data = req.all;
-
-	que = `SELECT *  FROM USER WHERE username='${data.username}' and password='${data.password}';` ;
-
-	db.all(que, function(err, result){
-		if (err) throw err;
-    
-		console.log('RESULT');
-		console.log(result);
-		console.log('RESULT LENGTH');
-		console.log(result.length);
-		
-		var k=result[0];
-		//console.log('1'+k);
-		console.log('USER');
-		console.log(k.username);
-		user=k.username;
-		console.log('the username is'+user);
-		
-		if(result.length!=0)
-			res.write('1');
-
-		else 
-			res.write('0');
-
-		res.end();
-
-	});
-
-	console.log(data);
+que = 'CREATE TABLE IF NOT EXISTS GROUND(gid INTEGER PRIMARY KEY, tid INTEGER, groundname TEXT, location TEXT,rating NUMBER,sportsname TEXT,safety TEXT,FOREIGN KEY(tid) REFERENCES TIMESLOTS(tid));';
+db.all(que, function(err, result){
+	if (err) throw err;
+	console.log(result);
 });
 
-app.get('/gstaffdetail', function(req, res){
-	var data = req.all;
+que = 'CREATE TABLE IF NOT EXISTS TIMESLOTS(tid INTEGER PRIMARY KEY, time REAL);';
+db.all(que, function(err, result){
+	if (err) throw err;
+	console.log(result);
+});
 
-	console.log('this is ground staff site');
-	console.log('user is '+ user);
-	console.log(data.username);
-
-	que = `INSERT INTO GROUND SELECT sportname,gid,groundname,gaddress1,gaddress2,gaddress3,gzipcode,rating,gstaffid,slot,price  FROM GROUND2 WHERE username='${data.username}';` ;
-
-	db.all(que, function(err, result){
-		if (err) throw err;
-    
-		console.log('RESULT');
-		console.log(result);
-		console.log('RESULT LENGTH');
-		console.log(result.length);
-		
-
-	});
-
-	console.log(data);
+que = 'CREATE TABLE IF NOT EXISTS BOOKINGS(bid INTEGER PRIMARY KEY AUTOINCREMENT, gid INTEGER, uid INTEGER, FOREIGN KEY(gid) REFERENCES GROUND(gid), FOREIGN KEY(uid) REFERENCES USER(uid));'; 
+db.all(que, function(err, result){
+	if (err) throw err;
+	console.log(result);
 });
 
 
 
+router.post('/logindetail', function(req, res){
+	var data1 = req.body;
+	sess = req.session;
+	var spawnSync = require('child_process');
+    py = spawnSync.spawnSync('python', ['./testingimg.py',`${data1.username}`]);
+	var outputimg = py.stdout;
+	console.log(`${outputimg}`);
+	if (`${outputimg}`==1)
+		{
+			console.log("welcome");
+			que = `SELECT uid FROM USER WHERE username='${data1.username}';`;
+			db.all(que,function(err,result){
+				if (err) throw err;
+				console.log(result);
+				sess.userid = result[0]["uid"];
+			});
+			sess.username = data1.username;
+			console.log(`${sess.username}`);
+			res.redirect('/');
+			res.end();
+		}else
+		{
+			console.log("wrong user");
+			res.redirect('/login');
+		}
+	//que = `SELECT *  FROM USER WHERE username='${data1.username}';` ;
 
-app.post('/signupdetail', function(req, res){
+	// db.all(que, function(err, result){
+		// if (err) throw err;
+   
+		// console.log('RESULT');
+		// console.log(result);
+		// console.log('RESULT LENGTH');
+		// console.log(result.length);
+	
+		// var k=result[0];
+		// console.log('1'+k);
+		// console.log('USER');
+		// console.log(k.username);
+		// user=k.username;
+		// console.log('the username is'+user);
+		
+		// if(result.length!=0)
+			// res.write('1');
+
+		// else 
+			// res.write('0');
+
+		// res.end();
+
+	// });
+	//console.log(data1);
+});
+
+// app.get('/gstaffdetail', function(req, res){
+	// var data = req.all;
+
+	// console.log('this is ground staff site');
+	// console.log('user is '+ user);
+	// console.log(data.username);
+
+	// que = `INSERT INTO GROUND SELECT sportname,gid,groundname,gaddress1,gaddress2,gaddress3,gzipcode,rating,gstaffid,slot,price  FROM GROUND2 WHERE username='${data.username}';` ;
+
+	// db.all(que, function(err, result){
+		// if (err) throw err;
+    
+		// console.log('RESULT');
+		// console.log(result);
+		// console.log('RESULT LENGTH');
+		// console.log(result.length);
+
+	// });
+
+	// console.log(data);
+// });
+
+
+
+router.post('/signupdetail', function(req, res){
 	console.log("test");
 	var data = req.body;
-	console.log("test:",data);
-	que = `INSERT into USER(firstname,lastname,username,password,mobileno,address1,address2,address3,zipcode) VALUES('${data.firstname}','${data.lastname}','${data.username}','${data.password}', '${data.mobileno}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}');`;
+	//console.log("test:",data);
+	que2 = `INSERT into USER(firstname,lastname,username,address1,address2,faceno,booking1) VALUES('${data.firstname}','${data.lastname}','${data.username}','${data.address1}','${data.address2}','${data.imgdata}',NULL);`;
 	
-	db.all(que, function(err, result){
+	db.all(que2, function(err, result){
 		if (err) throw err;
-
 		console.log(result);
 
 		res.end();
 
 	});
-
-	console.log(data);
-	res.render('index');
-});
-
-
-app.get('/staffsignupdetail', function(req, res){
-	var data = req.all;
-
-	que = `insert into GROUND_STAFF VALUES('${data.staffname}','${data.staffid}','${data.mobileno}');`;
-	db.all(que, function(err, result){
-		if (err) throw err;
-
-		console.log(result);
-
-		res.end();
-
-	});
-	que = `insert into GROUND VALUES('${data.sportname}','${data.gid}','${data.groundname}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}','${data.rating}','${data.staffid}','${data.slot}','${data.price}');`;
-	db.all(que, function(err, result){
-		if (err) throw err;
-
-		console.log(result);
-
-		res.end();
-
-	});
-
+	
 	console.log(data);
 });
 
+// app.get('/staffsignupdetail', function(req, res){
+	// var data = req.body;
 
-app.get('/bookingdetail', function(req, res){
+	// que = `Insert into GROUND_STAFF VALUES('${data.staffname}','${data.staffid}','${data.mobileno}');`;
+	// db.all(que, function(err, result){
+		// if (err) throw err;
+
+		// console.log(result);
+
+		// res.end();
+
+	// });
+	// que = `Insert into GROUND VALUES('${data.sportname}','${data.gid}','${data.groundname}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}','${data.rating}','${data.staffid}','${data.slot}','${data.price}');`;
+	// db.all(que, function(err, result){
+		// if (err) throw err;
+
+		// console.log(result);
+
+		// res.end();
+
+	// });
+	// console.log(data);
+// });
+
+router.get('/football',function(req,res){
+	//var data = req.body;
+	//que = 'SELECT gid,tid,groundname,location,rating,sportsname from GROUND WHERE sportsname="football" and safety="1";';
+	if(!sess){
+		res.render('examplelogin');
+	}
+	que1 = `SELECT * from GROUND WHERE sportsname='football' and safety='1';`;
+	console.log(`${que1}`);
+	db.all(que1,function(err,result){
+		if(err) throw err;
+		console.log(result);
+		res.render('footballselect',{places:result});
+	});
+});
+
+router.get('/booking',function(req,res){
+	var data = req.query.gid;
+	console.log(`${data}`);
+	que = `SELECT * FROM BOOKINGS WHERE gid='${data}';`;
+	db.all(que,function(err,result){
+		if (err) throw err;
+		if(result.length!=0){
+			console.log("invalid");
+			console.log(result);
+			res.redirect('/football');
+		}else{
+			console.log("valid");
+			console.log(result);
+			res.render('finalbooking',{ground:data});
+		}
+	});
+});
+
+router.post('/confirmed',function(req,res){
+	var data = req.query.gid;
+	var data1 = req.body;
+	console.log(`${sess.username}`);
+	console.log("I have reached here");
+	console.log(`${data}`);
+	console.log(`${data1.bookdate}`);
+	que = `INSERT INTO BOOKINGS(gid,uid) VALUES ('${data}','${sess.userid}');`;
+	db.all(que,function(err,result){
+		if (err) throw err;
+		console.log('success');
+		res.render('index');
+	});
+});
+
+router.get('/bookingdetail', function(req, res){
 	var data = req.all;
 
-	que = `SELECT * FROM GROUND WHERE sportname='${data.Sport}' and slot='${data.Slot}' and gaddress3='${data.Location}'`;
+	que = `SELECT * FROM GROUND WHERE sportname='${data.Sport}' and slot='${data.Slot}' and gaddress3='${data.Location}';`;
 	db.all(que, function(err, result){
 		if (err) throw err;
 
 		console.log(result);
 		var k;
-		k=JSON.stringify(result[0]);
+		k=JSON.stringify(result);
 		if(result.length==0)
 		{
 			res.write('no grounds available');
@@ -181,8 +267,7 @@ app.get('/bookingdetail', function(req, res){
 		});
 	});
 
-
-app.get('/bookingupdate', function(req, res){
+router.get('/bookingupdate', function(req, res){
 var data = req.all;
 console.log('the name of the user is '+user);
 
@@ -206,16 +291,10 @@ console.log('the name of the user is '+user);
 			console.log(result);
 			console.log('chalgaya');
 			var k;
-		
-
 			res.end();
-
 		});
-
 		}
-
 		else if(JSON.stringify(result[0].booking2)=='null')
-		
 		{
 			console.log('inside elseif    @@@@@@@@@@@@@@@@@@');
 			que = `update USER set booking2='${data.groundname}' where username='${user}'`;
@@ -293,31 +372,36 @@ console.log('the name of the user is '+user);
 
 });
 
-
-
-
-
-app.get('/', function(req, res){
+router.get('/', function(req, res){
 	res.render('index');
 });
 
-app.get('/signup', function(req, res){
+/*app.get('/signup', function(req, res){
 	res.render('signup');
+});*/
+
+router.get('/signup', function(req, res){
+	res.render('examplesignup');
 });
 
-app.get('/login', function(req, res){
+/*app.get('/login', function(req, res){
 	res.render('login');
+});*/
+
+router.get('/login', function(req,res){
+	res.render('examplelogin');
 });
-app.get('/bookings', function(req, res){
+
+router.get('/bookings', function(req, res){
 	res.render('bookings');
 });
-app.get('/gstaff', function(req, res){
+router.get('/gstaff', function(req, res){
 	res.render('gstaff');
 });
-app.get('/gstaffadd', function(req, res){
+router.get('/gstaffadd', function(req, res){
 	res.render('gstaffadd');
 });
-app.get('/gstaffloginadd', function(req, res){
+router.get('/gstaffloginadd', function(req, res){
 	res.render('gstaffloginadd');
 });
 app.get('/gstafflogin', function(req, res){
@@ -330,40 +414,40 @@ app.get('/staffsignup', function(req, res){
 app.get('/gstaffmaintainance', function(req, res){
 	res.render('gstaffmaintainance');
 });
-app.get('/gstafflogindetail', function(req, res){
-	var data = req.all;
+// app.get('/gstafflogindetail', function(req, res){
+	// var data = req.all;
 
-	que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;
+	// que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;
 
-	db.all(que, function(err, result){
-		if (err) throw err;
+	// db.all(que, function(err, result){
+		// if (err) throw err;
     
-		console.log('RESULT');
-		console.log(result);
-		console.log('RESULT LENGTH');
-		console.log(result.length);
+		// console.log('RESULT');
+		// console.log(result);
+		// console.log('RESULT LENGTH');
+		// console.log(result.length);
 		
-		var k=result[0];
+		// var k=result[0];
 		//console.log('1'+k);
-		console.log('USER');
-		console.log(k.staffname);
-		staff=k.staffname;
-		console.log('the username is'+staff);
+		// console.log('USER');
+		// console.log(k.staffname);
+		// staff=k.staffname;
+		// console.log('the username is'+staff);
 		
-		if(result.length!=0)
-			res.write('1');
+		// if(result.length!=0)
+			// res.write('1');
 
 							
 
-		else 
-			res.write('0');
+		// else 
+			// res.write('0');
 
-		res.end();
+		// res.end();
 
-	});
+	// });
 
-	console.log(data);
-});
+	// console.log(data);
+// });
 app.get('/gstaffloginadddetail', function(req, res){
 	var data = req.all;
 
