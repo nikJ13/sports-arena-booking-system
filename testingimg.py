@@ -19,7 +19,8 @@ def dbprocess():
 def main():
     cam = cv2.VideoCapture(0)   # 0 -> index of camera
     s, img = cam.read()
-    loc = "C:/Users/anujjain/Pictures/Camera Roll/Niket.jpg"
+    loc = "C:/Users/anujjain/Pictures/Camera Roll/Niket.jpg" # signup image
+    #loc = "C:/node-course/sports-arena-booking-system/image.png"
     if s:
         cv2.namedWindow("cam-test")
         cv2.imshow("cam-test",img)

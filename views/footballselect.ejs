@@ -22,7 +22,8 @@
 <!-- <a href="/booking">ok</a> -->
 <!--  } %> -->
 <% for (var i = 0;i<places.length;++i) { %>
-<a href="/booking?gid=<%=places[i]["gid"]%>">The ans is<%=JSON.stringify(places[i]["groundname"])%></a>
+<a href="/booking?gid=<%=places[i]["gid"]%>">Ground Name: <%=JSON.stringify(places[i]["groundname"])%></a><br>
+<p>Rating: <%=JSON.stringify(places[i]["rating"])%></p>
 <br>
 <% } %>
 </body>

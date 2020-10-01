@@ -1,10 +1,11 @@
 const player = document.getElementById('player');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const captureButton = document.getElementById('capturebutton');
+const captureButton = document.getElementById('buttonconfig');
 
 function convertToImageData(canvas) {
-	return canvas.toDataURL('image/png');
+	//return canvas.toDataURL('image/png');
+	return canvas.toDataURL("image/png");
 };
 
 const constraints = {
@@ -16,10 +17,13 @@ function capButton() {
 	// Draw the video frame to the canvas.
 		context.drawImage(player, 0, 0, canvas.width, canvas.height);
 	});
-
 	var data = convertToImageData(canvas);
-	console.log(data);
+	console.log(canvas.width);
+	console.log(canvas.height);
+	console.log(context.getImageData(0, 0, canvas.width, canvas.height));
+	//console.log(data);
 	// alert(data);
+	//console.log("page location is: "+window.location.href);
 	document.getElementById('fileInput').value = data;
 };
 
