@@ -29,7 +29,7 @@ var con = mysql.createConnection(con_data);
   }); 
 
 
- que = 'CREATE TABLE IF NOT EXISTS USER(ID INT(3) AUTO_INCREMENT PRIMARY KEY, username varchar(15), password varchar(15));';
+ que = 'CREATE TABLE IF NOT EXISTS USER(ID INT(3) AUTO_INCREMENT PRIMARY KEY, username varchar(15), password varchar(15));'; //SQL query
 con.query(que, function(err, result ){
 	if (err) throw err;
 
@@ -96,7 +96,7 @@ app.get('/gstaffdetail', function(req, res){
 	console.log('user is '+ user);
 	console.log(data.username);
 
-	que = `INSERT INTO GROUND SELECT sportname,gid,groundname,gaddress1,gaddress2,gaddress3,gzipcode,rating,gstaffid,slot,price  FROM GROUND2 WHERE username='${data.username}';` ;
+	que = `INSERT INTO GROUND SELECT sportname,gid,groundname,gaddress1,gaddress2,gaddress3,gzipcode,rating,gstaffid,slot,price  FROM GROUND2 WHERE username='${data.username}';` ;  //SQL query
 
 	con.query(que, function(err, result){
 		if (err) throw err;
@@ -118,7 +118,7 @@ app.get('/gstaffdetail', function(req, res){
 app.get('/signupdetail', function(req, res){
 	var data = req.query;
 
-	que = `insert into USER(firstname,lastname,username, password,mobileno,address1,address2,address3,zipcode) VALUES('${data.firstname}','${data.lastname}','${data.username}','${data.password}', '${data.mobileno}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}');`;
+	que = `insert into USER(firstname,lastname,username, password,mobileno,address1,address2,address3,zipcode) VALUES('${data.firstname}','${data.lastname}','${data.username}','${data.password}', '${data.mobileno}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}');`;  //SQL query
 	con.query(que, function(err, result){
 		if (err) throw err;
 
@@ -135,7 +135,7 @@ app.get('/signupdetail', function(req, res){
 app.get('/staffsignupdetail', function(req, res){
 	var data = req.query;
 
-	que = `insert into GROUND_STAFF VALUES('${data.staffname}','${data.staffid}','${data.mobileno}');`;
+	que = `insert into GROUND_STAFF VALUES('${data.staffname}','${data.staffid}','${data.mobileno}');`; //SQL query
 	con.query(que, function(err, result){
 		if (err) throw err;
 
@@ -144,7 +144,7 @@ app.get('/staffsignupdetail', function(req, res){
 		res.end();
 
 	});
-	que = `insert into GROUND VALUES('${data.sportname}','${data.gid}','${data.groundname}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}','${data.rating}','${data.staffid}','${data.slot}','${data.price}');`;
+	que = `insert into GROUND VALUES('${data.sportname}','${data.gid}','${data.groundname}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}','${data.rating}','${data.staffid}','${data.slot}','${data.price}');`; //SQL query
 	con.query(que, function(err, result){
 		if (err) throw err;
 
@@ -163,7 +163,7 @@ app.get('/staffsignupdetail', function(req, res){
 app.get('/bookingdetail', function(req, res){
 	var data = req.query;
 
-	que = `SELECT * FROM GROUND WHERE sportname='${data.Sport}' and slot='${data.Slot}' and gaddress3='${data.Location}'`;
+	que = `SELECT * FROM GROUND WHERE sportname='${data.Sport}' and slot='${data.Slot}' and gaddress3='${data.Location}'`; //SQL query
 	con.query(que, function(err, result){
 		if (err) throw err;
 
@@ -198,7 +198,7 @@ console.log('the name of the user is '+user);
 
 	
 
-	que=`SELECT booking1,booking2 FROM USER WHERE username='${user}'`;
+	que=`SELECT booking1,booking2 FROM USER WHERE username='${user}'`; //SQL query
 	con.query(que, function(err, result){
 		
 		if (err) throw err;
@@ -211,7 +211,7 @@ console.log('the name of the user is '+user);
 			if(JSON.stringify(result[0].booking1)=='null')
 		{
 			console.log('inside if    @@@@@@@@@@@@@@@@@@');
-			que = `update USER set booking1='${data.groundname}' where username='${user}'`;
+			que = `update USER set booking1='${data.groundname}' where username='${user}'`; //SQL query
 			con.query(que, function(err, result){
 			if (err) throw err;
 
@@ -230,7 +230,7 @@ console.log('the name of the user is '+user);
 		
 		{
 			console.log('inside elseif    @@@@@@@@@@@@@@@@@@');
-			que = `update USER set booking2='${data.groundname}' where username='${user}'`;
+			que = `update USER set booking2='${data.groundname}' where username='${user}'`; //SQL query
 			con.query(que, function(err, result){
 			if (err) throw err;
 
@@ -288,7 +288,7 @@ console.log('the name of the user is '+user);
 
 		});
 
-	que=`DELETE FROM GROUND WHERE groundname='${data.groundname}' and slot='${data.slot}';`
+	que=`DELETE FROM GROUND WHERE groundname='${data.groundname}' and slot='${data.slot}';` //SQL query
 	con.query(que, function(err, result){
 			if (err) throw err;
 
@@ -345,7 +345,7 @@ app.get('/gstaffmaintainance', function(req, res){
 app.get('/gstafflogindetail', function(req, res){
 	var data = req.query;
 
-	que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;
+	que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;  //SQL query
 
 	con.query(que, function(err, result){
 		if (err) throw err;
@@ -379,8 +379,8 @@ app.get('/gstafflogindetail', function(req, res){
 app.get('/gstaffloginadddetail', function(req, res){
 	var data = req.query;
 
-	que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;
-
+	que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;  //SQL query
+ 
 	con.query(que, function(err, result){
 		if (err) throw err;
     
@@ -413,7 +413,7 @@ app.get('/gstaffloginadddetail', function(req, res){
 app.get('/gstaffmaintainancedetail', function(req, res){
 	var data = req.query;
 
-	que = `SELECT *  FROM GROUND A, GROUND_STAFF B WHERE B.staffid=A.gstaffid and staffname='${staff}';` ;
+	que = `SELECT *  FROM GROUND A, GROUND_STAFF B WHERE B.staffid=A.gstaffid and staffname='${staff}';` ;  //SQL query
 
 	con.query(que, function(err, result){
 		if (err) throw err;
@@ -440,7 +440,7 @@ app.get('/gstaffmaintainancedetail', function(req, res){
 app.get('/gstaffmaintainancedetail2', function(req, res){
 	var data = req.query;
 
-	que = `DELETE FROM GROUND WHERE gstaffid='${staffid}' and slot='${data.slot}'` ;
+	que = `DELETE FROM GROUND WHERE gstaffid='${staffid}' and slot='${data.slot}'` ;  //SQL query
 
 	con.query(que, function(err, result){
 		if (err) throw err;
@@ -466,7 +466,7 @@ app.get('/gstaffmaintainancedetail2', function(req, res){
 app.get('/gstaffadddetail', function(req, res){
 	var data = req.query;
 
-	que = `SELECT *  FROM GROUND A, GROUND_STAFF B WHERE B.staffid=A.gstaffid and staffname='${staff}';` ;
+	que = `SELECT *  FROM GROUND A, GROUND_STAFF B WHERE B.staffid=A.gstaffid and staffname='${staff}';` ; //SQL query
 
 	con.query(que, function(err, result){
 		if (err) throw err;
@@ -494,7 +494,7 @@ app.get('/gstaffadddetail', function(req, res){
 app.get('/gstaffadddetail2', function(req, res){
 	var data = req.query;
 
-	que = `INSERT into GROUND VALUES('${g.sportname}','${g.gid}','${g.groundname}','${g.gaddress1}','${g.gaddress2}','${g.gaddress3}','${g.gzipcode}','${g.rating}','${g.gstaffid}','${data.slot}','${g.price}');`;
+	que = `INSERT into GROUND VALUES('${g.sportname}','${g.gid}','${g.groundname}','${g.gaddress1}','${g.gaddress2}','${g.gaddress3}','${g.gzipcode}','${g.rating}','${g.gstaffid}','${data.slot}','${g.price}');`; //SQL query
 
 	con.query(que, function(err, result){
 		if (err) throw err;
