@@ -54,7 +54,12 @@ db.run('PRAGMA busy_timeout = 6000');
 
 que = 'CREATE TABLE IF NOT EXISTS USER(uid INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT, username TEXT, password TEXT, address1 TEXT, address2 TEXT, faceno BLOB, booking1 INTEGER,FOREIGN KEY(booking1) REFERENCES GROUND(gid));';
 
+
 db.all(que, function(err, result){
+
+ que = 'CREATE TABLE IF NOT EXISTS USER(ID INT(3) AUTO_INCREMENT PRIMARY KEY, username varchar(15), password varchar(15));'; //SQL query
+con.query(que, function(err, result ){
+
 	if (err) throw err;
 	console.log(result);
 });
@@ -157,8 +162,23 @@ router.get('/logout',function(req,res,next){
 
 	// que = `INSERT INTO GROUND SELECT sportname,gid,groundname,gaddress1,gaddress2,gaddress3,gzipcode,rating,gstaffid,slot,price  FROM GROUND2 WHERE username='${data.username}';` ;
 
+
 	// db.all(que, function(err, result){
 		// if (err) throw err;
+
+
+app.get('/gstaffdetail', function(req, res){
+	var data = req.query;
+
+	console.log('this is ground staff site');
+	console.log('user is '+ user);
+	console.log(data.username);
+
+	que = `INSERT INTO GROUND SELECT sportname,gid,groundname,gaddress1,gaddress2,gaddress3,gzipcode,rating,gstaffid,slot,price  FROM GROUND2 WHERE username='${data.username}';` ;  //SQL query
+
+	con.query(que, function(err, result){
+		if (err) throw err;
+
     
 		// console.log('RESULT');
 		// console.log(result);
@@ -169,6 +189,7 @@ router.get('/logout',function(req,res,next){
 
 	// console.log(data);
 // });
+
 
 
 
@@ -184,6 +205,10 @@ router.post('/signupdetail', function(req, res){
 		if(err) throw err;
 	});
 	db.all(que2, function(err, result){
+
+	que = `insert into USER(firstname,lastname,username, password,mobileno,address1,address2,address3,zipcode) VALUES('${data.firstname}','${data.lastname}','${data.username}','${data.password}', '${data.mobileno}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}');`;  //SQL query
+	con.query(que, function(err, result){
+
 		if (err) throw err;
 		console.log(result);
 		res.end();
@@ -199,7 +224,13 @@ router.post('/signupdetail', function(req, res){
 	// db.all(que, function(err, result){
 		// if (err) throw err;
 
+
 		// console.log(result);
+
+	que = `insert into GROUND_STAFF VALUES('${data.staffname}','${data.staffid}','${data.mobileno}');`; //SQL query
+	con.query(que, function(err, result){
+		if (err) throw err;
+
 
 		// res.end();
 
@@ -208,7 +239,14 @@ router.post('/signupdetail', function(req, res){
 	// db.all(que, function(err, result){
 		// if (err) throw err;
 
+
 		// console.log(result);
+
+	});
+	que = `insert into GROUND VALUES('${data.sportname}','${data.gid}','${data.groundname}','${data.address1}','${data.address2}','${data.address3}','${data.zipcode}','${data.rating}','${data.staffid}','${data.slot}','${data.price}');`; //SQL query
+	con.query(que, function(err, result){
+		if (err) throw err;
+
 
 		// res.end();
 
@@ -234,11 +272,22 @@ router.get('/football',function(req,res){
 	}
 });
 
+
 router.get('/booking',function(req,res){
 	var data = req.query.gid;
 	console.log(`${data}`);
 	que = `SELECT * FROM BOOKINGS WHERE gid='${data}';`;
 	db.all(que,function(err,result){
+
+
+
+
+app.get('/bookingdetail', function(req, res){
+	var data = req.query;
+
+	que = `SELECT * FROM GROUND WHERE sportname='${data.Sport}' and slot='${data.Slot}' and gaddress3='${data.Location}'`; //SQL query
+	con.query(que, function(err, result){
+
 		if (err) throw err;
 		if(result.length!=0){
 			console.log("invalid");
@@ -302,12 +351,18 @@ router.get('/workout',function(req,res){
 // var data = req.all;
 // console.log('the name of the user is '+user);
 
+
 	// que=`SELECT booking1,booking2 FROM USER WHERE username='${user}'`;
 	// db.all(que, function(err, result){
+
+	que=`SELECT booking1,booking2 FROM USER WHERE username='${user}'`; //SQL query
+	con.query(que, function(err, result){
+
 		
 		// if (err) throw err;
 		
 	
+
 			// console.log(result);
 			// console.log(JSON.stringify(result[0].booking1));
 				// console.log(JSON.stringify(result[0].booking2));
@@ -348,6 +403,57 @@ router.get('/workout',function(req,res){
 		// res.end();
 	// }
 
+			console.log(result);
+			console.log(JSON.stringify(result[0].booking1));
+				console.log(JSON.stringify(result[0].booking2));
+
+			if(JSON.stringify(result[0].booking1)=='null')
+		{
+			console.log('inside if    @@@@@@@@@@@@@@@@@@');
+			que = `update USER set booking1='${data.groundname}' where username='${user}'`; //SQL query
+			con.query(que, function(err, result){
+			if (err) throw err;
+
+			console.log(result);
+			console.log('chalgaya');
+			var k;
+		
+
+			res.end();
+
+		});
+
+		}
+
+		else if(JSON.stringify(result[0].booking2)=='null')
+		
+		{
+			console.log('inside elseif    @@@@@@@@@@@@@@@@@@');
+			que = `update USER set booking2='${data.groundname}' where username='${user}'`; //SQL query
+			con.query(que, function(err, result){
+			if (err) throw err;
+
+			console.log(result);
+			console.log('chalgaya');
+			var k;
+		
+
+			res.end();
+
+		});
+			
+
+		}
+
+	else 
+		{
+			var k='ALREADY EXCEEDS MAX BOOKING';
+			res.write(k);
+		console.log('nhi chala');
+		res.end();
+	}
+
+
 	
 
 
@@ -382,9 +488,15 @@ router.get('/workout',function(req,res){
 
 		// });
 
+
 	// que=`DELETE FROM GROUND WHERE groundname='${data.groundname}' and slot='${data.slot}';`
 	// db.all(que, function(err, result){
 			// if (err) throw err;
+
+	que=`DELETE FROM GROUND WHERE groundname='${data.groundname}' and slot='${data.slot}';` //SQL query
+	con.query(que, function(err, result){
+			if (err) throw err;
+
 
 			// console.log(result);
 			// console.log('chalgaya');
@@ -450,7 +562,11 @@ app.get('/gstaffmaintainance', function(req, res){
 // app.get('/gstafflogindetail', function(req, res){
 	// var data = req.all;
 
+
 	// que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;
+
+	que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;  //SQL query
+
 
 	// db.all(que, function(err, result){
 		// if (err) throw err;
@@ -484,9 +600,15 @@ app.get('/gstaffmaintainance', function(req, res){
 app.get('/gstaffloginadddetail', function(req, res){
 	var data = req.all;
 
+
 	que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;
 
 	db.all(que, function(err, result){
+
+	que = `SELECT *  FROM GROUND_STAFF WHERE staffname='${data.username}' and staffid='${data.password}';` ;  //SQL query
+ 
+	con.query(que, function(err, result){
+
 		if (err) throw err;
     
 		console.log('RESULT');
@@ -518,7 +640,7 @@ app.get('/gstaffloginadddetail', function(req, res){
 app.get('/gstaffmaintainancedetail', function(req, res){
 	var data = req.all;
 
-	que = `SELECT *  FROM GROUND A, GROUND_STAFF B WHERE B.staffid=A.gstaffid and staffname='${staff}';` ;
+	que = `SELECT *  FROM GROUND A, GROUND_STAFF B WHERE B.staffid=A.gstaffid and staffname='${staff}';` ;  //SQL query
 
 	db.all(que, function(err, result){
 		if (err) throw err;
@@ -545,7 +667,7 @@ app.get('/gstaffmaintainancedetail', function(req, res){
 app.get('/gstaffmaintainancedetail2', function(req, res){
 	var data = req.all;
 
-	que = `DELETE FROM GROUND WHERE gstaffid='${staffid}' and slot='${data.slot}'` ;
+	que = `DELETE FROM GROUND WHERE gstaffid='${staffid}' and slot='${data.slot}'` ;  //SQL query
 
 	db.all(que, function(err, result){
 		if (err) throw err;
@@ -571,7 +693,7 @@ app.get('/gstaffmaintainancedetail2', function(req, res){
 app.get('/gstaffadddetail', function(req, res){
 	var data = req.all;
 
-	que = `SELECT *  FROM GROUND A, GROUND_STAFF B WHERE B.staffid=A.gstaffid and staffname='${staff}';` ;
+	que = `SELECT *  FROM GROUND A, GROUND_STAFF B WHERE B.staffid=A.gstaffid and staffname='${staff}';` ; //SQL query
 
 	db.all(que, function(err, result){
 		if (err) throw err;
@@ -599,7 +721,7 @@ app.get('/gstaffadddetail', function(req, res){
 app.get('/gstaffadddetail2', function(req, res){
 	var data = req.all;
 
-	que = `INSERT into GROUND VALUES('${g.sportname}','${g.gid}','${g.groundname}','${g.gaddress1}','${g.gaddress2}','${g.gaddress3}','${g.gzipcode}','${g.rating}','${g.gstaffid}','${data.slot}','${g.price}');`;
+	que = `INSERT into GROUND VALUES('${g.sportname}','${g.gid}','${g.groundname}','${g.gaddress1}','${g.gaddress2}','${g.gaddress3}','${g.gzipcode}','${g.rating}','${g.gstaffid}','${data.slot}','${g.price}');`; //SQL query
 
 	db.all(que, function(err, result){
 		if (err) throw err;
